@@ -11,7 +11,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
-import ve.ucla.informationsystems.persistence.util.Role;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import ve.ucla.informationsystems.config.security.filter.JwtAuthenticationFilter;
 
 @AllArgsConstructor
 @Configuration
@@ -21,11 +22,15 @@ public class HttpSecurityConfig {
 
     private final AuthenticationProvider authenticationProvider;
 
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(CsrfConfigurer::disable)
                 .sessionManagement(sessionConf -> sessionConf.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authenticationProvider(authenticationProvider)
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(authReqConfig-> {
 
                     authReqConfig.requestMatchers(HttpMethod.POST, "/customers").permitAll();
@@ -34,7 +39,6 @@ public class HttpSecurityConfig {
                     authReqConfig.requestMatchers("/error").permitAll();
 
 
-                    authReqConfig.requestMatchers(HttpMethod.GET,"/products").hasAuthority(Role.ROLE_CUSTOMER.name());
                     authReqConfig.anyRequest().authenticated();
                 })
                 .build();
