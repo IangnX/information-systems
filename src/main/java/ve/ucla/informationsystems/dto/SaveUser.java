@@ -23,6 +23,7 @@ public class SaveUser implements Serializable {
     private String password;
 
     @Size(min = 8)
+    @NotBlank(message = "El campo repeatedPassword es obligatorio")
     private String repeatedPassword;
 
 }

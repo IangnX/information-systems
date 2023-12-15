@@ -2,6 +2,7 @@ package ve.ucla.informationsystems.service.impl;
 
 
 import lombok.AllArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import ve.ucla.informationsystems.dto.SaveUser;
@@ -19,6 +20,8 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
+    private final PasswordEncoder passwordEncoder;
+
     @Override
     public User registerOneCustomer(SaveUser newUser) {
 
@@ -29,7 +32,7 @@ public class UserServiceImpl implements UserService {
         user.setName(newUser.getName());
         user.setPassword(newUser.getPassword());
         user.setRole(Role.ROLE_CUSTOMER);
-        user.setPassword(user.getPassword());
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
 
