@@ -5,12 +5,14 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import ve.ucla.informationsystems.dto.RegisteredUser;
 import ve.ucla.informationsystems.dto.SaveUser;
 import ve.ucla.informationsystems.dto.auth.AuthenticationRequest;
 import ve.ucla.informationsystems.dto.auth.AuthenticationResponse;
+import ve.ucla.informationsystems.exception.ObjectNotFoundException;
 import ve.ucla.informationsystems.persistence.entity.User;
 import ve.ucla.informationsystems.service.UserService;
 
@@ -74,5 +76,12 @@ public class AuthenticationService {
             log.error(e.getMessage());
             return false;
         }
+    }
+
+    public User findLoggedInUser() {
+        UsernamePasswordAuthenticationToken authentication =
+                (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        String username = (String) authentication.getPrincipal();
+        return userService.findByUsername(username).orElseThrow(() -> new ObjectNotFoundException("User not found. Username "+ username));
     }
 }

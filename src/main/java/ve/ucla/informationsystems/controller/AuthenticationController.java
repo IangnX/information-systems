@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ve.ucla.informationsystems.dto.auth.AuthenticationRequest;
 import ve.ucla.informationsystems.dto.auth.AuthenticationResponse;
+import ve.ucla.informationsystems.persistence.entity.User;
 import ve.ucla.informationsystems.service.auth.AuthenticationService;
 
 @RestController
@@ -31,5 +32,12 @@ public class AuthenticationController {
 
         AuthenticationResponse authResponse = authenticationService.login(authenticationRequest);
         return ResponseEntity.ok(authResponse);
+    }
+
+    @GetMapping("/profile")
+    public ResponseEntity<User> findMyProfile(){
+
+        User user = authenticationService.findLoggedInUser();
+        return ResponseEntity.ok(user);
     }
 }
