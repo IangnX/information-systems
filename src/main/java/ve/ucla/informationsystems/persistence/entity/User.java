@@ -36,7 +36,7 @@ public class User implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         if (role == null) return null;
 
-        return Arrays.asList(new SimpleGrantedAuthority(role.name()));
+        return Arrays.asList(new SimpleGrantedAuthority("ROLE_" + this.getRole()));
     }
 
     @Override

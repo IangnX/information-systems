@@ -13,6 +13,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import ve.ucla.informationsystems.config.security.filter.JwtAuthenticationFilter;
+import ve.ucla.informationsystems.persistence.util.Role;
 
 @AllArgsConstructor
 @Configuration
@@ -32,6 +33,28 @@ public class HttpSecurityConfig {
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(authReqConfig-> {
+
+                    //Product Endpoint Authorization
+                    authReqConfig.requestMatchers(HttpMethod.GET, "/products")
+                                    .hasAnyRole(Role.ADMINISTRATOR.name(),
+                                            Role.CUSTOMER.name(),
+                                            Role.EMPLOYEE.name());
+
+                    authReqConfig.requestMatchers(HttpMethod.GET, "/products/{productId}")
+                            .hasAnyRole(Role.ADMINISTRATOR.name(),
+                                    Role.CUSTOMER.name(),
+                                    Role.EMPLOYEE.name());
+
+                    authReqConfig.requestMatchers(HttpMethod.POST, "/products")
+                            .hasRole(Role.ADMINISTRATOR.name());
+
+                    authReqConfig.requestMatchers(HttpMethod.PUT, "/products/{productId}")
+                            .hasRole(Role.ADMINISTRATOR.name());
+
+                    //Customer Endpoint Authorization
+                    authReqConfig.requestMatchers(HttpMethod.GET, "/auth/profile")
+                            .hasAnyRole(Role.ADMINISTRATOR.name(), Role.EMPLOYEE.name(),
+                                    Role.CUSTOMER.name());
 
                     authReqConfig.requestMatchers(HttpMethod.POST, "/customers").permitAll();
                     authReqConfig.requestMatchers(HttpMethod.POST, "/auth/authenticate").permitAll();
